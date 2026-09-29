@@ -37,17 +37,6 @@ export async function call(url, { method = 'GET', body } = {}, retry = true) {
   return data;
 }
 
-// The JWT has no role claim, so probe an admin-only endpoint with an empty body:
-// USER -> 403 from security; ADMIN -> 400 from validation (nothing is created).
-export async function detectRole() {
-  try {
-    await call('/api/cities', { method: 'POST', body: {} });
-    return 'ADMIN';
-  } catch (e) {
-    return e.status === 400 ? 'ADMIN' : 'USER';
-  }
-}
-
 export const api = {
   register: (b) => call('/auth/register', { method: 'POST', body: b }),
   login: (b) => call('/auth/login', { method: 'POST', body: b }),

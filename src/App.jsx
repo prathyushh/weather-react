@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { api, detectRole, loadSession, saveSession, setExpiredHandler } from './api.js';
+import { api, loadSession, saveSession, setExpiredHandler } from './api.js';
 
 export default function App() {
   const [session, setSession] = useState(loadSession);
@@ -58,10 +58,9 @@ function AuthPanel({ flash, onLoggedIn }) {
         setMode('login'); setF({ ...f, password: '' });
       } else {
         const d = await api.login({ username: f.username.trim(), password: f.password });
-        saveSession({ access: d.accessToken, refresh: d.refreshToken, user: f.username.trim() });
-        const role = await detectRole();
-        const s = { access: d.accessToken, refresh: d.refreshToken, user: f.username.trim(), role };
-        saveSession(s); onLoggedIn(s);
+        const s = { access: d.accessToken, refresh: d.refreshToken, user: f.username.trim(), role: d.role };
+        saveSession(s);
+        onLoggedIn(s);
       }
     } catch (err) { flash(err.message); }
     setBusy(false);
